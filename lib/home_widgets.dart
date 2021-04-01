@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:soccer/details.dart';
+import 'package:soccer/voir-plus.dart';
 import 'constantes.dart';
 
-menuTitle(String title, Color color){
+menuTitle(String title, Color color, BuildContext context, int index, int lang){
   return Row(
     children: [
       Align(
@@ -32,31 +34,86 @@ menuTitle(String title, Color color){
         ),
       ),
       Spacer(),
-      Text("Tout voir", style: TextStyle(
-        color: color,
-        fontWeight: FontWeight.bold,
-        fontSize: 14,
-      ),)
+      InkWell(
+        onTap: (){
+          Navigator.push(context, MaterialPageRoute(builder: (_) => VoirPlus(index: index, lang: lang, color: color,)));
+        },
+        child: Text("Voir plus", style: TextStyle(
+          color: color,
+          fontWeight: FontWeight.bold,
+          fontSize: 14,
+        ),),
+      )
     ],
   );
 }
-
-menuList(int count){
+int rm = 120;
+menuList(List<Map> list, bool showText, Color color, BuildContext context, int lieu, int lang){
   return Container(
-      height: 150,
+      height: HOME_HEAD - rm,
       child: ListView.builder(
           scrollDirection: Axis.horizontal,
           reverse: false,
-          itemCount: count,
+          itemCount: list.length,
           itemBuilder: (context, index){
-            return Padding(
-              padding: EdgeInsets.only(right: PADDING/4),
-              child: Container(
-                height: MediaQuery.of(context).size.width/2,
-                width: MediaQuery.of(context).size.width/2,
-                decoration: BoxDecoration(
-                    color: Colors.pink,
-                  borderRadius: BorderRadius.all(Radius.circular(PADDING))
+            return InkWell(
+              onTap: (){
+                //print(index);
+                Navigator.push(context, MaterialPageRoute(builder: (_) => Details(id: index, index: lieu, lang: lang)));
+              },
+              child: Padding(
+                padding: EdgeInsets.only(right: PADDING/4),
+                child: Stack(
+                  children: [
+                    Container(
+                      height: HOME_HEAD - rm,
+                      width: HOME_HEAD - rm,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.all(Radius.circular(PADDING/2)),
+                        image: DecorationImage(
+                          image: AssetImage(list[index]["image"]),
+                          fit: BoxFit.cover
+                        ),
+                      ),
+                    ),
+                    showText == true?Padding(
+                      padding: EdgeInsets.only(top: HOME_HEAD/2 - PADDING*2),
+                      child: Container(
+                        color: Colors.black.withOpacity(0.5),
+                        child: Padding(
+                          padding: EdgeInsets.all(8.0),
+                          child: Text(list[index]["name"].toString().length>20?list[index]["name"].toString().substring(0, 20)+"...":list[index]["name"],
+                            style: TextStyle(
+                              color: BLANC,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 10
+                          ),),
+                        ),
+                      ),
+                    ):Container(),
+                    showText == true?Container(
+                      decoration: BoxDecoration(
+                        color: color,
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(PADDING/2),
+                          bottomRight: Radius.circular(PADDING/2)
+                        )
+                      ),
+                      child: Padding(
+                        padding: EdgeInsets.all(PADDING/4),
+                        child: Row(
+                          children: [
+                            Icon(Icons.location_on, color: BLANC,size: 20,),
+                            Text(list[index]["lieu"], style: TextStyle(
+                              color: BLANC,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 10
+                            ),),
+                          ],
+                        ),
+                      ),
+                    ):Container(),
+                  ],
                 ),
               ),
             );
